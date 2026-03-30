@@ -283,6 +283,7 @@ async def _start_llama_server(model_path: Path, gpu_layers: int = DEFAULT_GPU_LA
 
     # Auto-calculate GPU layers if set to 99 (auto) and model is too large
     use_uma = False
+    use_mlock = True  # Always enable mlock for consistent RAM access
     if gpu_layers >= 99:
         model_size_mb = model_path.stat().st_size / (1024 * 1024)
         _, vram_free = _detect_vram_mb()

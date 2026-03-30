@@ -116,14 +116,14 @@ detect_gpu() {
 # ─── Clone Engine ───────────────────────────────────────────────────────────────
 
 clone_engine() {
-  if [ -d "$ENGINE_DIR/.git" ]; then
-    ok "Engine already cloned"
+  if [ -d "$ENGINE_DIR" ]; then
+    ok "Engine directory exists (using ik_llama.cpp)"
     return
   fi
 
-  log "Cloning llama.cpp TurboQuant fork..."
+  log "Cloning ik_llama.cpp (ikawrakow fork with optimizations)..."
   mkdir -p "$(dirname "$ENGINE_DIR")"
-  git clone --depth 1 https://github.com/spiritbuun/llama-cpp-turboquant-cuda.git "$ENGINE_DIR"
+  git clone --depth 1 https://github.com/ikawrakow/ik_llama.cpp.git "$ENGINE_DIR"
   ok "Engine cloned"
 }
 
