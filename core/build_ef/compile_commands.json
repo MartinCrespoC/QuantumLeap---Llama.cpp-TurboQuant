@@ -1,0 +1,146 @@
+[
+{
+  "directory": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef",
+  "command": "/usr/bin/c++ -DAVX2=1 -I/home/ikharoz/Documents/Proyectos/QuantumLeap/core/include  -O3 -Wall -Wextra -Wpedantic -O3 -DNDEBUG -march=native -std=gnu++20 -o CMakeFiles/turboquant.dir/src/turboquant/polar_transform.cpp.o -c /home/ikharoz/Documents/Proyectos/QuantumLeap/core/src/turboquant/polar_transform.cpp",
+  "file": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/src/turboquant/polar_transform.cpp",
+  "output": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef/CMakeFiles/turboquant.dir/src/turboquant/polar_transform.cpp.o"
+},
+{
+  "directory": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef",
+  "command": "/usr/bin/c++ -DAVX2=1 -I/home/ikharoz/Documents/Proyectos/QuantumLeap/core/include  -O3 -Wall -Wextra -Wpedantic -O3 -DNDEBUG -march=native -std=gnu++20 -o CMakeFiles/turboquant.dir/src/turboquant/hadamard.cpp.o -c /home/ikharoz/Documents/Proyectos/QuantumLeap/core/src/turboquant/hadamard.cpp",
+  "file": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/src/turboquant/hadamard.cpp",
+  "output": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef/CMakeFiles/turboquant.dir/src/turboquant/hadamard.cpp.o"
+},
+{
+  "directory": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef",
+  "command": "/usr/bin/c++ -DAVX2=1 -I/home/ikharoz/Documents/Proyectos/QuantumLeap/core/include  -O3 -Wall -Wextra -Wpedantic -O3 -DNDEBUG -march=native -std=gnu++20 -o CMakeFiles/turboquant.dir/src/turboquant/polarquant.cpp.o -c /home/ikharoz/Documents/Proyectos/QuantumLeap/core/src/turboquant/polarquant.cpp",
+  "file": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/src/turboquant/polarquant.cpp",
+  "output": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef/CMakeFiles/turboquant.dir/src/turboquant/polarquant.cpp.o"
+},
+{
+  "directory": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef",
+  "command": "/usr/bin/c++ -DAVX2=1 -I/home/ikharoz/Documents/Proyectos/QuantumLeap/core/include  -O3 -Wall -Wextra -Wpedantic -O3 -DNDEBUG -march=native -std=gnu++20 -o CMakeFiles/turboquant.dir/src/turboquant/qjl.cpp.o -c /home/ikharoz/Documents/Proyectos/QuantumLeap/core/src/turboquant/qjl.cpp",
+  "file": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/src/turboquant/qjl.cpp",
+  "output": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef/CMakeFiles/turboquant.dir/src/turboquant/qjl.cpp.o"
+},
+{
+  "directory": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef",
+  "command": "/usr/bin/c++ -DAVX2=1 -I/home/ikharoz/Documents/Proyectos/QuantumLeap/core/include  -O3 -Wall -Wextra -Wpedantic -O3 -DNDEBUG -march=native -std=gnu++20 -o CMakeFiles/turboquant.dir/src/turboquant/turboquant_kv.cpp.o -c /home/ikharoz/Documents/Proyectos/QuantumLeap/core/src/turboquant/turboquant_kv.cpp",
+  "file": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/src/turboquant/turboquant_kv.cpp",
+  "output": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef/CMakeFiles/turboquant.dir/src/turboquant/turboquant_kv.cpp.o"
+},
+{
+  "directory": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef",
+  "command": "/usr/bin/c++ -DAVX2=1 -I/home/ikharoz/Documents/Proyectos/QuantumLeap/core/include  -O3 -Wall -Wextra -Wpedantic -O3 -DNDEBUG -march=native -std=gnu++20 -o CMakeFiles/turboquant.dir/src/turboquant/residual_quant.cpp.o -c /home/ikharoz/Documents/Proyectos/QuantumLeap/core/src/turboquant/residual_quant.cpp",
+  "file": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/src/turboquant/residual_quant.cpp",
+  "output": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef/CMakeFiles/turboquant.dir/src/turboquant/residual_quant.cpp.o"
+},
+{
+  "directory": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef",
+  "command": "/usr/bin/c++ -DAVX2=1 -I/home/ikharoz/Documents/Proyectos/QuantumLeap/core/include  -O3 -Wall -Wextra -Wpedantic -O3 -DNDEBUG -march=native -std=gnu++20 -o CMakeFiles/turboquant.dir/src/turboquant/lookup_tables.cpp.o -c /home/ikharoz/Documents/Proyectos/QuantumLeap/core/src/turboquant/lookup_tables.cpp",
+  "file": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/src/turboquant/lookup_tables.cpp",
+  "output": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef/CMakeFiles/turboquant.dir/src/turboquant/lookup_tables.cpp.o"
+},
+{
+  "directory": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef",
+  "command": "/usr/bin/c++ -DAVX2=1 -I/home/ikharoz/Documents/Proyectos/QuantumLeap/core/include  -O3 -Wall -Wextra -Wpedantic -O3 -DNDEBUG -march=native -std=gnu++20 -o CMakeFiles/turboquant.dir/src/llama_integration/ggml_turboquant.cpp.o -c /home/ikharoz/Documents/Proyectos/QuantumLeap/core/src/llama_integration/ggml_turboquant.cpp",
+  "file": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/src/llama_integration/ggml_turboquant.cpp",
+  "output": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef/CMakeFiles/turboquant.dir/src/llama_integration/ggml_turboquant.cpp.o"
+},
+{
+  "directory": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef",
+  "command": "/usr/bin/c++ -DAVX2=1 -I/home/ikharoz/Documents/Proyectos/QuantumLeap/core/include  -O3 -Wall -Wextra -Wpedantic -O3 -DNDEBUG -march=native -std=gnu++20 -o CMakeFiles/turboquant.dir/src/llama_integration/llama_cpp_patch.cpp.o -c /home/ikharoz/Documents/Proyectos/QuantumLeap/core/src/llama_integration/llama_cpp_patch.cpp",
+  "file": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/src/llama_integration/llama_cpp_patch.cpp",
+  "output": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef/CMakeFiles/turboquant.dir/src/llama_integration/llama_cpp_patch.cpp.o"
+},
+{
+  "directory": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef",
+  "command": "/usr/bin/cc -DAVX2=1 -I/home/ikharoz/Documents/Proyectos/QuantumLeap/core/include -O3 -DNDEBUG -o CMakeFiles/turboquant.dir/src/turboquant/polar_transform_avx2.S.o -c /home/ikharoz/Documents/Proyectos/QuantumLeap/core/src/turboquant/polar_transform_avx2.S",
+  "file": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/src/turboquant/polar_transform_avx2.S",
+  "output": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef/CMakeFiles/turboquant.dir/src/turboquant/polar_transform_avx2.S.o"
+},
+{
+  "directory": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef",
+  "command": "/usr/bin/cc -DAVX2=1 -I/home/ikharoz/Documents/Proyectos/QuantumLeap/core/include -O3 -DNDEBUG -o CMakeFiles/turboquant.dir/src/kernels/dequant_fast_avx2.S.o -c /home/ikharoz/Documents/Proyectos/QuantumLeap/core/src/kernels/dequant_fast_avx2.S",
+  "file": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/src/kernels/dequant_fast_avx2.S",
+  "output": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef/CMakeFiles/turboquant.dir/src/kernels/dequant_fast_avx2.S.o"
+},
+{
+  "directory": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef",
+  "command": "/usr/bin/c++ -DAVX2=1 -I/home/ikharoz/Documents/Proyectos/QuantumLeap/core/include  -O3 -Wall -Wextra -Wpedantic -O3 -DNDEBUG -march=native -std=gnu++20 -fPIC -o CMakeFiles/expertflow.dir/src/expertflow/expert_map.cpp.o -c /home/ikharoz/Documents/Proyectos/QuantumLeap/core/src/expertflow/expert_map.cpp",
+  "file": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/src/expertflow/expert_map.cpp",
+  "output": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef/CMakeFiles/expertflow.dir/src/expertflow/expert_map.cpp.o"
+},
+{
+  "directory": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef",
+  "command": "/usr/bin/c++ -DAVX2=1 -I/home/ikharoz/Documents/Proyectos/QuantumLeap/core/include  -O3 -Wall -Wextra -Wpedantic -O3 -DNDEBUG -march=native -std=gnu++20 -fPIC -o CMakeFiles/expertflow.dir/src/expertflow/expert_cache.cpp.o -c /home/ikharoz/Documents/Proyectos/QuantumLeap/core/src/expertflow/expert_cache.cpp",
+  "file": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/src/expertflow/expert_cache.cpp",
+  "output": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef/CMakeFiles/expertflow.dir/src/expertflow/expert_cache.cpp.o"
+},
+{
+  "directory": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef",
+  "command": "/usr/bin/c++ -DAVX2=1 -I/home/ikharoz/Documents/Proyectos/QuantumLeap/core/include  -O3 -Wall -Wextra -Wpedantic -O3 -DNDEBUG -march=native -std=gnu++20 -fPIC -o CMakeFiles/expertflow.dir/src/expertflow/expert_prefetcher.cpp.o -c /home/ikharoz/Documents/Proyectos/QuantumLeap/core/src/expertflow/expert_prefetcher.cpp",
+  "file": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/src/expertflow/expert_prefetcher.cpp",
+  "output": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef/CMakeFiles/expertflow.dir/src/expertflow/expert_prefetcher.cpp.o"
+},
+{
+  "directory": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef",
+  "command": "/usr/bin/c++ -DAVX2=1 -I/home/ikharoz/Documents/Proyectos/QuantumLeap/core/include  -O3 -Wall -Wextra -Wpedantic -O3 -DNDEBUG -march=native -std=gnu++20 -fPIC -o CMakeFiles/expertflow.dir/src/expertflow/expert_compressor.cpp.o -c /home/ikharoz/Documents/Proyectos/QuantumLeap/core/src/expertflow/expert_compressor.cpp",
+  "file": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/src/expertflow/expert_compressor.cpp",
+  "output": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef/CMakeFiles/expertflow.dir/src/expertflow/expert_compressor.cpp.o"
+},
+{
+  "directory": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef",
+  "command": "/usr/bin/c++ -DAVX2=1 -I/home/ikharoz/Documents/Proyectos/QuantumLeap/core/include  -O3 -Wall -Wextra -Wpedantic -O3 -DNDEBUG -march=native -std=gnu++20 -fPIC -o CMakeFiles/expertflow.dir/src/expertflow/routing_predictor.cpp.o -c /home/ikharoz/Documents/Proyectos/QuantumLeap/core/src/expertflow/routing_predictor.cpp",
+  "file": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/src/expertflow/routing_predictor.cpp",
+  "output": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef/CMakeFiles/expertflow.dir/src/expertflow/routing_predictor.cpp.o"
+},
+{
+  "directory": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef",
+  "command": "/usr/bin/c++ -DAVX2=1 -I/home/ikharoz/Documents/Proyectos/QuantumLeap/core/include  -O3 -Wall -Wextra -Wpedantic -O3 -DNDEBUG -march=native -std=gnu++20 -fPIC -o CMakeFiles/expertflow.dir/src/expertflow/pipeline_controller.cpp.o -c /home/ikharoz/Documents/Proyectos/QuantumLeap/core/src/expertflow/pipeline_controller.cpp",
+  "file": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/src/expertflow/pipeline_controller.cpp",
+  "output": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef/CMakeFiles/expertflow.dir/src/expertflow/pipeline_controller.cpp.o"
+},
+{
+  "directory": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef",
+  "command": "/usr/bin/c++ -DAVX2=1 -I/home/ikharoz/Documents/Proyectos/QuantumLeap/core/include  -O3 -Wall -Wextra -Wpedantic -O3 -DNDEBUG -march=native -std=gnu++20 -fPIC -o CMakeFiles/expertflow.dir/src/expertflow/moe_dispatch.cpp.o -c /home/ikharoz/Documents/Proyectos/QuantumLeap/core/src/expertflow/moe_dispatch.cpp",
+  "file": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/src/expertflow/moe_dispatch.cpp",
+  "output": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef/CMakeFiles/expertflow.dir/src/expertflow/moe_dispatch.cpp.o"
+},
+{
+  "directory": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef",
+  "command": "/usr/bin/c++ -DAVX2=1 -I/home/ikharoz/Documents/Proyectos/QuantumLeap/core/include  -O3 -Wall -Wextra -Wpedantic -O3 -DNDEBUG -march=native -std=gnu++20 -fPIC -o CMakeFiles/expertflow.dir/src/expertflow/expertflow_backend.cpp.o -c /home/ikharoz/Documents/Proyectos/QuantumLeap/core/src/expertflow/expertflow_backend.cpp",
+  "file": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/src/expertflow/expertflow_backend.cpp",
+  "output": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef/CMakeFiles/expertflow.dir/src/expertflow/expertflow_backend.cpp.o"
+},
+{
+  "directory": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef",
+  "command": "/usr/bin/c++ -DAVX2=1 -I/home/ikharoz/Documents/Proyectos/QuantumLeap/core/include  -O3 -Wall -Wextra -Wpedantic -O3 -DNDEBUG -march=native -std=gnu++20 -o CMakeFiles/test_accuracy.dir/tests/accuracy_test.cpp.o -c /home/ikharoz/Documents/Proyectos/QuantumLeap/core/tests/accuracy_test.cpp",
+  "file": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/tests/accuracy_test.cpp",
+  "output": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef/CMakeFiles/test_accuracy.dir/tests/accuracy_test.cpp.o"
+},
+{
+  "directory": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef",
+  "command": "/usr/bin/c++ -DAVX2=1 -I/home/ikharoz/Documents/Proyectos/QuantumLeap/core/include  -O3 -Wall -Wextra -Wpedantic -O3 -DNDEBUG -march=native -std=gnu++20 -o CMakeFiles/test_turboquant_kv.dir/tests/test_turboquant_kv.cpp.o -c /home/ikharoz/Documents/Proyectos/QuantumLeap/core/tests/test_turboquant_kv.cpp",
+  "file": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/tests/test_turboquant_kv.cpp",
+  "output": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef/CMakeFiles/test_turboquant_kv.dir/tests/test_turboquant_kv.cpp.o"
+},
+{
+  "directory": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef",
+  "command": "/usr/bin/c++ -DAVX2=1 -I/home/ikharoz/Documents/Proyectos/QuantumLeap/core/include  -O3 -Wall -Wextra -Wpedantic -O3 -DNDEBUG -march=native -std=gnu++20 -o CMakeFiles/bench_polar.dir/tests/benchmark_polar.cpp.o -c /home/ikharoz/Documents/Proyectos/QuantumLeap/core/tests/benchmark_polar.cpp",
+  "file": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/tests/benchmark_polar.cpp",
+  "output": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef/CMakeFiles/bench_polar.dir/tests/benchmark_polar.cpp.o"
+},
+{
+  "directory": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef",
+  "command": "/usr/bin/c++ -DAVX2=1 -I/home/ikharoz/Documents/Proyectos/QuantumLeap/core/include  -O3 -Wall -Wextra -Wpedantic -O3 -DNDEBUG -march=native -std=gnu++20 -o CMakeFiles/bench_matmul.dir/tests/benchmark_matmul.cpp.o -c /home/ikharoz/Documents/Proyectos/QuantumLeap/core/tests/benchmark_matmul.cpp",
+  "file": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/tests/benchmark_matmul.cpp",
+  "output": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef/CMakeFiles/bench_matmul.dir/tests/benchmark_matmul.cpp.o"
+},
+{
+  "directory": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef",
+  "command": "/usr/bin/c++ -DAVX2=1 -I/home/ikharoz/Documents/Proyectos/QuantumLeap/core/include  -O3 -Wall -Wextra -Wpedantic -O3 -DNDEBUG -march=native -std=gnu++20 -o CMakeFiles/test_expertflow.dir/tests/test_expertflow.cpp.o -c /home/ikharoz/Documents/Proyectos/QuantumLeap/core/tests/test_expertflow.cpp",
+  "file": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/tests/test_expertflow.cpp",
+  "output": "/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef/CMakeFiles/test_expertflow.dir/tests/test_expertflow.cpp.o"
+}
+]

@@ -51,3 +51,18 @@ engine/llama.cpp/models/
 tmp/
 temp/
 *.tmp
+
+# Documentation (keep only README.md)
+*_RESULTS.md
+*_COMPLETE.md
+*_SUMMARY.md
+*_ANALYSIS.md
+*_FINAL.md
+PHASE*.md
+EXPERTFLOW_*.md
+INTEGRATION_STATUS.md
+MEMORY.md
+!QUICKSTART.md
+!README.md
+!EXPERTFLOW_FINAL_RESULTS.md
+!CONTRIBUTING.md

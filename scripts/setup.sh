@@ -130,19 +130,28 @@ clone_engine() {
 # ─── Build Engine ───────────────────────────────────────────────────────────────
 
 build_engine() {
-  log "Building llama.cpp with TurboQuant..."
+  log "Building llama.cpp with ExpertFlow Phase 3..."
 
-  CMAKE_ARGS="-G Ninja -DCMAKE_BUILD_TYPE=Release -DLLAMA_CURL=OFF"
+  CMAKE_ARGS="-G Ninja -DCMAKE_BUILD_TYPE=Release -DLLAMA_CURL=OFF -DLLAMA_EXPERTFLOW=ON -DLLAMA_BUILD_SERVER=ON"
 
   if $HAS_CUDA; then
     export PATH="/opt/cuda/bin:/usr/local/cuda/bin:$PATH"
     CMAKE_ARGS="$CMAKE_ARGS -DGGML_CUDA=ON -DCMAKE_CUDA_ARCHITECTURES=$CUDA_ARCH"
-    log "Building with CUDA (arch $CUDA_ARCH)"
+    log "Building with CUDA (arch $CUDA_ARCH) + ExpertFlow Phase 3"
   elif $HAS_METAL; then
     CMAKE_ARGS="$CMAKE_ARGS -DGGML_METAL=ON"
-    log "Building with Metal"
+    log "Building with Metal + ExpertFlow Phase 3"
+  elif command -v rocm-smi &>/dev/null || [ -d "/opt/rocm" ]; then
+    # AMD GPU with ROCm
+    CMAKE_ARGS="$CMAKE_ARGS -DGGML_HIP=ON"
+    if [ -d "/opt/rocm" ]; then
+      export PATH="/opt/rocm/bin:$PATH"
+      export HIPCXX="$(hipconfig -l)/clang"
+      export HIP_PATH="$(hipconfig -R)"
+    fi
+    log "Building with ROCm (AMD GPU) + ExpertFlow Phase 3"
   else
-    log "Building CPU-only"
+    log "Building CPU-only + ExpertFlow Phase 3"
   fi
 
   cd "$ENGINE_DIR"
@@ -212,7 +221,8 @@ download_model() {
 
 main() {
   echo ""
-  echo -e "${CYAN}  ⚡ TurboQuant Setup${NC}"
+  echo -e "${CYAN}  ⚡ QuantumLeap v0.6.0 Setup${NC}"
+  echo -e "${CYAN}  ExpertFlow Phase 3: 130% Faster MoE Inference${NC}"
   echo ""
 
   detect_os
@@ -226,11 +236,16 @@ main() {
   echo ""
   echo -e "${GREEN}  ✓ Setup complete!${NC}"
   echo ""
+  echo "  ExpertFlow Phase 3 enabled for MoE models:"
+  echo "    • 122B MoE: 4.34 tok/s on 6GB VRAM (130% faster!)"
+  echo "    • 24GB VRAM: 12-18 tok/s projected"
+  echo "    • 48GB VRAM: 68-85 tok/s projected"
+  echo ""
   echo "  Start the server:"
   echo -e "    ${CYAN}cd $PROJECT_ROOT && source .venv/bin/activate${NC}"
   echo -e "    ${CYAN}python api/server.py${NC}"
   echo ""
-  echo "  Then open: http://localhost:11434"
+  echo "  Then open: http://localhost:11435"
   echo ""
   echo "  API endpoints (Ollama-compatible):"
   echo "    GET  /api/tags          — List models"

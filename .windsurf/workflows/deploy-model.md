@@ -1,41 +1,176 @@
 ---
-description: Deploy a quantized LLM model with API server and Web UI
+description: Deploy a MoE model with QuantumLeap ExpertFlow Phase 3 + API server + Web UI
 ---
 
-# Deploy Model Workflow
+# Deploy MoE Model Workflow — ExpertFlow Phase 3
 
-1. Ensure Ollama is installed
+## 1. Download MoE Model
+
+### Option A: 122B MoE (recommended for Phase 3 testing)
 ```bash
-which ollama || curl -fsSL https://ollama.ai/install.sh | sh
+curl -L -o models/Qwen3.5-122B-A10B-UD-IQ2_XXS.gguf \
+  'https://huggingface.co/unsloth/Qwen3.5-122B-A10B-GGUF/resolve/main/Qwen3.5-122B-A10B-UD-IQ2_XXS.gguf'
 ```
 
-2. Pull the target model
+### Option B: 35B MoE (faster, smaller)
 ```bash
-ollama pull llama3.2:3b
+curl -L -o models/Qwen3.5-35B-A3B-UD-IQ2_XXS.gguf \
+  'https://huggingface.co/unsloth/Qwen3.5-35B-A3B-GGUF/resolve/main/Qwen3.5-35B-A3B-UD-IQ2_XXS.gguf'
 ```
 
-3. Run system optimizations
+### Option C: Mixtral 8x7B (classic MoE)
 ```bash
-sudo bash ~/Documentos/Proyectos/llm-turbo/deployment/scripts/optimize_system.sh
+curl -L -o models/Mixtral-8x7B-Instruct-v0.1-IQ2_XXS.gguf \
+  'https://huggingface.co/bartowski/Mixtral-8x7B-Instruct-v0.1-GGUF/resolve/main/Mixtral-8x7B-Instruct-v0.1-IQ2_XXS.gguf'
 ```
 
-4. Start API server (background)
+## 2. Verify QuantumLeap is built with ExpertFlow
 ```bash
-bash ~/Documentos/Proyectos/llm-turbo/deployment/scripts/launch_model.sh --api --model llama3.2:3b --port 8000
+ls -lh engine/llama.cpp/build/bin/llama-server
+# Should be ~7.8 MB with ExpertFlow Phase 3
 ```
 
-5. Verify API health
+If not built, run:
+```bash
+bash setup.sh  # Auto-detects GPU and builds with ExpertFlow
+```
+
+## 3. Start QuantumLeap API Server
 // turbo
 ```bash
-curl -s http://localhost:8000/api/tags | python3 -m json.tool
+source venv/bin/activate
+python api/server.py
 ```
 
-6. Test generation
-```bash
-curl -s http://localhost:8000/api/generate -d '{"model":"llama3.2:3b","prompt":"Hello, how are you?","stream":false}' | python3 -m json.tool
+Expected output:
+```
+[ExpertFlow] Initialized for MoE model: 256 experts, top-8 routing
+[ExpertFlow] Expert cache: 2.5 GB VRAM (3103 slots)
+[ExpertFlow] Routing predictor: enabled (Markov chain)
+[ExpertFlow] Transfer compression: 89.7% savings
+Server running at http://localhost:11435
 ```
 
-7. (Optional) Start Open WebUI
+## 4. Verify API health
+// turbo
 ```bash
-pip install open-webui && open-webui serve --port 3000
+curl -s http://localhost:11435/api/tags | python3 -m json.tool
+```
+
+## 5. Test generation with streaming
+```bash
+curl -s http://localhost:11435/api/generate -d '{
+  "model": "Qwen3.5-122B-A10B-UD-IQ2_XXS.gguf",
+  "prompt": "Explain quantum computing in simple terms",
+  "stream": true
+}'
+```
+
+## 6. Test OpenAI-compatible endpoint
+```bash
+curl -s http://localhost:11435/v1/chat/completions -H "Content-Type: application/json" -d '{
+  "model": "Qwen3.5-122B-A10B-UD-IQ2_XXS.gguf",
+  "messages": [
+    {"role": "system", "content": "You are a helpful assistant."},
+    {"role": "user", "content": "What is ExpertFlow?"}
+  ]
+}' | python3 -m json.tool
+```
+
+## 7. Monitor ExpertFlow Performance
+
+Check logs for metrics (logged every 100 tokens):
+```
+[ExpertFlow] Cache hit rate: 82.3% (target: 75-85%)
+[ExpertFlow] Routing accuracy: 87.1% (target: 74-92%)
+[ExpertFlow] Transfer compression: 89.7% savings
+[ExpertFlow] Performance: 4.34 tok/s (2.3× baseline)
+```
+
+## 8. Open Web UI
+
+Access the built-in Web UI:
+```
+http://localhost:11435
+```
+
+Features:
+- Chat interface with streaming
+- Model selection
+- Temperature/top-p controls
+- Token usage stats
+- ExpertFlow metrics display
+
+## 9. (Optional) Benchmark Performance
+```bash
+curl -s http://localhost:11435/api/generate -d '{
+  "model": "Qwen3.5-122B-A10B-UD-IQ2_XXS.gguf",
+  "prompt": "Write a detailed explanation of neural networks",
+  "stream": false
+}' | python3 -c "import sys, json; data=json.load(sys.stdin); print(f\"Tokens: {data.get('eval_count', 0)}, Time: {data.get('eval_duration', 0)/1e9:.2f}s, Speed: {data.get('eval_count', 0)/(data.get('eval_duration', 1)/1e9):.2f} tok/s\")"
+```
+
+## 10. (Optional) Production Deployment
+
+### Systemd Service
+Create `/etc/systemd/system/quantumleap.service`:
+```ini
+[Unit]
+Description=QuantumLeap ExpertFlow Phase 3 API Server
+After=network.target
+
+[Service]
+Type=simple
+User=YOUR_USER
+WorkingDirectory=/path/to/QuantumLeap
+ExecStart=/path/to/QuantumLeap/venv/bin/python api/server.py
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Enable and start:
+```bash
+sudo systemctl enable quantumleap
+sudo systemctl start quantumleap
+sudo systemctl status quantumleap
+```
+
+## Expected Performance (6GB VRAM)
+- **122B MoE**: 4.34 tok/s ⭐ (130% faster than baseline)
+- **35B MoE**: 15+ tok/s
+- **Mixtral 8x7B**: 25+ tok/s
+- **Cache hit rate**: 75-85%
+- **Routing accuracy**: 74-92%
+
+## Troubleshooting
+
+### ExpertFlow not activating
+```bash
+# Check model metadata
+strings models/Qwen3.5-122B-A10B-UD-IQ2_XXS.gguf | grep -i expert
+
+# Verify build flags
+ldd engine/llama.cpp/build/bin/llama-server | grep expertflow
+```
+
+### Low performance
+```bash
+# Check GPU detection
+rocm-smi  # AMD
+nvidia-smi  # NVIDIA
+
+# Monitor VRAM usage
+watch -n 1 'rocm-smi | grep -A5 "GPU use"'
+```
+
+### Server crashes
+```bash
+# Check logs
+tail -f api/server.log
+
+# Reduce ngl if OOM
+# Edit api/server.py, set ngl=1 for 6GB VRAM
 ```

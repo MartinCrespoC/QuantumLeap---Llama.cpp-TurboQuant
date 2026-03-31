@@ -1,0 +1,12 @@
+# ninja log v7
+3	1168	1774937544269120053	CMakeFiles/expertflow.dir/src/expertflow/expert_cache.cpp.o	ac74cc33a50f7bda
+4	1169	1774937544269684306	CMakeFiles/expertflow.dir/src/expertflow/routing_predictor.cpp.o	7367cceb97990911
+4	1452	1774937544269527215	CMakeFiles/expertflow.dir/src/expertflow/expert_compressor.cpp.o	e4129831012e0827
+3	1540	1774937544269265758	CMakeFiles/expertflow.dir/src/expertflow/expert_prefetcher.cpp.o	387bf1f6f657c1a
+4	1634	1774937544270041948	CMakeFiles/expertflow.dir/src/expertflow/moe_dispatch.cpp.o	fe1ed8773ef14bb5
+4	2137	1774937544269841167	CMakeFiles/expertflow.dir/src/expertflow/pipeline_controller.cpp.o	9b8ee4cbbde393b1
+5	2700	1774937544270265764	CMakeFiles/test_expertflow.dir/tests/test_expertflow.cpp.o	9d847e94b10dba60
+4	4402	1774937544270199789	CMakeFiles/expertflow.dir/src/expertflow/expertflow_backend.cpp.o	9cceb31207e875d1
+1	4937	1774937544266265743	CMakeFiles/expertflow.dir/src/expertflow/expert_map.cpp.o	ccb5c3b99c3b4f2f
+4937	5059	1774937549202290885	libexpertflow.a	43b8c1443b9a493e
+5059	5115	1774937549324291506	test_expertflow	c6c37266bb63ecc0

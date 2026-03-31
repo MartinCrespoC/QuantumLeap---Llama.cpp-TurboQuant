@@ -4,6 +4,16 @@
 #include <cmath>
 #include <cpuid.h>
 
+// Assembly-implemented SIMD functions (unmangled C symbols from .S files)
+#ifdef AVX512
+extern "C" void polar_transform_avx512(
+    const float* x, const float* y, float* magnitude, float* angle, size_t n);
+#endif
+#ifdef AVX2
+extern "C" void polar_transform_avx2(
+    const float* x, const float* y, float* magnitude, float* angle, size_t n);
+#endif
+
 namespace turboquant {
 
 // Scalar fallback implementation
@@ -39,6 +49,7 @@ bool has_avx2() {
 }
 
 // Auto-dispatch: selects best implementation at runtime
+// Priority: AVX-512 → AVX2 → scalar
 void polar_transform(
     const float* __restrict__ x,
     const float* __restrict__ y,
@@ -51,6 +62,19 @@ void polar_transform(
     size_t vec_n = (n / 16) * 16;
     polar_transform_avx512(x, y, magnitude, angle, vec_n);
     // Handle remainder with scalar
+    if (vec_n < n) {
+      polar_transform_scalar(x + vec_n, y + vec_n,
+                             magnitude + vec_n, angle + vec_n,
+                             n - vec_n);
+    }
+    return;
+  }
+#endif
+#ifdef AVX2
+  if (has_avx2() && n >= 8) {
+    // Process 8 elements at a time with AVX2
+    size_t vec_n = (n / 8) * 8;
+    polar_transform_avx2(x, y, magnitude, angle, vec_n);
     if (vec_n < n) {
       polar_transform_scalar(x + vec_n, y + vec_n,
                              magnitude + vec_n, angle + vec_n,

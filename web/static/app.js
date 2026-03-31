@@ -1,6 +1,8 @@
-/* ═══ TurboQuant Web UI v0.2 ═══ */
+/* ═══ TurboQuant Web UI v0.3 ═══ */
 
 const API = '';
+let workspaces = [];
+let currentWorkspaceId = null;
 let conversations = [];
 let currentConvId = null;
 let abortController = null;
@@ -38,10 +40,12 @@ $$('.nav-tab').forEach(btn => {
 // ─── Init ──────────────────────────────────────────────────────────────────────
 
 async function init() {
+  loadWorkspaces();
   loadConversations();
   await refreshChatModels();
   await refreshStatus();
-  newChat();
+  renderWorkspaceSelector();
+  if (conversations.length === 0) newChat();
   setInterval(refreshStatus, 5000);
   setInterval(pollDownloads, 2000);
 }
@@ -103,15 +107,36 @@ async function refreshChatModels() {
   } catch (e) { /* ignore */ }
 }
 
+function loadWorkspaces() {
+  try {
+    workspaces = JSON.parse(localStorage.getItem('tq_workspaces') || '[]');
+    if (workspaces.length === 0) {
+      workspaces = [{ id: 'default', name: 'Default Workspace', created: Date.now() }];
+      localStorage.setItem('tq_workspaces', JSON.stringify(workspaces));
+    }
+    currentWorkspaceId = localStorage.getItem('tq_current_workspace') || workspaces[0].id;
+  } catch {
+    workspaces = [{ id: 'default', name: 'Default Workspace', created: Date.now() }];
+    currentWorkspaceId = 'default';
+  }
+}
+
 function loadConversations() {
-  try { conversations = JSON.parse(localStorage.getItem('tq_convs') || '[]'); }
+  const key = `tq_convs_${currentWorkspaceId}`;
+  try { conversations = JSON.parse(localStorage.getItem(key) || '[]'); }
   catch { conversations = []; }
   renderConvList();
 }
 
 function saveConversations() {
-  localStorage.setItem('tq_convs', JSON.stringify(conversations));
+  const key = `tq_convs_${currentWorkspaceId}`;
+  localStorage.setItem(key, JSON.stringify(conversations));
   renderConvList();
+}
+
+function saveWorkspaces() {
+  localStorage.setItem('tq_workspaces', JSON.stringify(workspaces));
+  localStorage.setItem('tq_current_workspace', currentWorkspaceId);
 }
 
 function renderConvList() {
@@ -127,12 +152,115 @@ function renderConvList() {
 }
 
 function newChat() {
-  const c = { id: Date.now().toString(), title: 'New Chat', messages: [], model: $('#chat-model-select').value };
+  const c = { 
+    id: Date.now().toString(), 
+    title: 'New Chat', 
+    messages: [], 
+    model: $('#chat-model-select').value,
+    workspace: currentWorkspaceId,
+    created: Date.now()
+  };
   conversations.unshift(c);
   currentConvId = c.id;
   saveConversations();
   renderMessages();
 }
+
+function createWorkspace() {
+  const name = prompt('Workspace name:', `Project ${workspaces.length + 1}`);
+  if (!name) return;
+  const ws = { id: Date.now().toString(), name, created: Date.now() };
+  workspaces.push(ws);
+  saveWorkspaces();
+  switchWorkspace(ws.id);
+  renderWorkspaceSelector();
+  toast(`Workspace "${name}" created`, 'success');
+}
+
+function switchWorkspace(id) {
+  if (currentWorkspaceId === id) return;
+  currentWorkspaceId = id;
+  saveWorkspaces();
+  loadConversations();
+  renderWorkspaceSelector();
+  if (conversations.length > 0) {
+    switchConv(conversations[0].id);
+  } else {
+    currentConvId = null;
+    renderMessages();
+  }
+  const ws = workspaces.find(w => w.id === id);
+  toast(`Switched to "${ws?.name || 'Unknown'}"`, 'info');
+}
+
+function deleteWorkspace(id) {
+  if (workspaces.length === 1) {
+    toast('Cannot delete the last workspace', 'error');
+    return;
+  }
+  const ws = workspaces.find(w => w.id === id);
+  if (!confirm(`Delete workspace "${ws?.name}"? All conversations will be lost.`)) return;
+  workspaces = workspaces.filter(w => w.id !== id);
+  localStorage.removeItem(`tq_convs_${id}`);
+  if (currentWorkspaceId === id) {
+    switchWorkspace(workspaces[0].id);
+  }
+  saveWorkspaces();
+  renderWorkspaceSelector();
+  toast(`Workspace "${ws?.name}" deleted`, 'info');
+}
+
+function renameWorkspace(id) {
+  const ws = workspaces.find(w => w.id === id);
+  if (!ws) return;
+  const newName = prompt('New workspace name:', ws.name);
+  if (!newName || newName === ws.name) return;
+  ws.name = newName;
+  saveWorkspaces();
+  renderWorkspaceSelector();
+  toast(`Workspace renamed to "${newName}"`, 'success');
+}
+
+function renderWorkspaceSelector() {
+  const container = $('#workspace-selector');
+  if (!container) return;
+  const current = workspaces.find(w => w.id === currentWorkspaceId);
+  container.innerHTML = `
+    <div class="workspace-current" onclick="toggleWorkspaceMenu()">
+      <span class="workspace-icon">📁</span>
+      <span class="workspace-name">${escHtml(current?.name || 'Workspace')}</span>
+      <span class="workspace-arrow">▼</span>
+    </div>
+    <div id="workspace-menu" class="workspace-menu hidden">
+      ${workspaces.map(ws => `
+        <div class="workspace-item ${ws.id === currentWorkspaceId ? 'active' : ''}">
+          <span class="ws-name" onclick="switchWorkspace('${ws.id}')">${escHtml(ws.name)}</span>
+          <div class="ws-actions">
+            <button onclick="event.stopPropagation(); renameWorkspace('${ws.id}')" title="Rename">✏️</button>
+            ${workspaces.length > 1 ? `<button onclick="event.stopPropagation(); deleteWorkspace('${ws.id}')" title="Delete">🗑️</button>` : ''}
+          </div>
+        </div>
+      `).join('')}
+      <div class="workspace-item new" onclick="createWorkspace()">
+        <span class="ws-name">+ New Workspace</span>
+      </div>
+    </div>
+  `;
+}
+
+function toggleWorkspaceMenu() {
+  const menu = $('#workspace-menu');
+  if (!menu) return;
+  menu.classList.toggle('hidden');
+}
+
+document.addEventListener('click', (e) => {
+  const menu = $('#workspace-menu');
+  const selector = $('#workspace-selector');
+  if (menu && selector && !selector.contains(e.target)) {
+    menu.classList.add('hidden');
+  }
+});
 
 function switchConv(id) {
   currentConvId = id;
@@ -282,6 +410,24 @@ $('#msg-input').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.s
 $('#send-btn').addEventListener('click', sendMessage);
 $('#stop-btn').addEventListener('click', stopGen);
 $('#new-chat-btn').addEventListener('click', newChat);
+$('#chat-model-select').addEventListener('change', async (e) => {
+  const newModel = e.target.value;
+  if (!newModel) return;
+  const conv = getConv();
+  if (conv) conv.model = newModel;
+  try {
+    await fetch(`${API}/api/models/unload`, { method: 'POST' });
+    await fetch(`${API}/api/models/load`, { 
+      method: 'POST', 
+      headers: { 'Content-Type': 'application/json' }, 
+      body: JSON.stringify({ name: newModel }) 
+    });
+    toast(`Switched to ${newModel}`, 'success');
+    refreshStatus();
+  } catch (e) {
+    toast(`Failed to switch model: ${e.message}`, 'error');
+  }
+});
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // MODELS TAB
@@ -319,8 +465,11 @@ function fitIcon(fits) {
 
 function renderHardwareSummary() {
   if (!hwInfo) return;
-  const vram = (hwInfo.vram_total_mb / 1024).toFixed(1);
-  const ram = (hwInfo.ram_total_mb / 1024).toFixed(0);
+  const gpu = hwInfo.gpu || {};
+  const cpu = hwInfo.cpu || {};
+  const ram = hwInfo.ram || {};
+  const tier = hwInfo.tier || {};
+  const vram = (gpu.vram_total_mb / 1024).toFixed(1);
   const tbl = hwInfo.compatibility_table || [];
 
   // Build quick summary lines
@@ -344,14 +493,28 @@ function renderHardwareSummary() {
     lines.push(`<div class="hw-line">${icon} <strong>${s.label} models:</strong> ${qStr}</div>`);
   }
 
+  const vendorBadge = gpu.vendor ? `<span class="mc-badge ${gpu.vendor}">${gpu.vendor.toUpperCase()}</span>` : '';
+  const unifiedBadge = gpu.unified_memory ? '<span class="mc-badge moe">Unified Memory</span>' : '';
+  const tierBadge = tier.tier ? `<span class="mc-badge tier-${tier.tier}">${tier.tier.toUpperCase()}</span>` : '';
+  const cpuModel = cpu.model ? escHtml(cpu.model) : 'Unknown CPU';
+  const cpuFeats = [];
+  if (cpu.avx512) cpuFeats.push('AVX-512');
+  else if (cpu.avx2) cpuFeats.push('AVX2');
+  else if (cpu.avx) cpuFeats.push('AVX');
+  const cpuFeatStr = cpuFeats.length ? ` (${cpuFeats.join(', ')})` : '';
+
   $('#hw-compat-summary').innerHTML = `
     <div class="hw-info-grid">
       <div class="hw-specs">
-        <div class="hw-spec"><strong>GPU</strong> ${escHtml(hwInfo.gpu_name)} (${vram} GB VRAM)</div>
-        <div class="hw-spec"><strong>RAM</strong> ${ram} GB</div>
+        <div class="hw-spec"><strong>GPU</strong> ${escHtml(gpu.name || 'None')} (${vram} GB${gpu.unified_memory ? ' Unified' : ' VRAM'}) ${vendorBadge}${unifiedBadge}</div>
+        <div class="hw-spec"><strong>CPU</strong> ${cpuModel}${cpuFeatStr} (${cpu.cores_physical || '?'}c/${cpu.cores_logical || '?'}t)</div>
+        <div class="hw-spec"><strong>RAM</strong> ${ram.total_gb || '?'} GB ${tierBadge}</div>
+        ${tier.description ? `<div class="hw-spec hw-tier-desc">${escHtml(tier.description)}</div>` : ''}
       </div>
       <div class="hw-fits">${lines.join('')}</div>
     </div>`;
+
+  loadRecommendations();
 }
 
 function renderCompatTable() {
@@ -374,6 +537,81 @@ function renderCompatTable() {
   }
   html += '</tbody></table>';
   $('#hw-compat-table').innerHTML = html;
+}
+
+// ─── Model Recommendations ──────────────────────────────────────────────────
+
+async function loadRecommendations() {
+  const el = $('#recommendations-grid');
+  if (!el) return;
+  try {
+    const res = await fetch(`${API}/api/recommendations`);
+    const data = await res.json();
+    el.innerHTML = '';
+    const hw = data.hardware || {};
+    const tip = data.tip || '';
+
+    // Tip banner
+    if (tip) {
+      const tipEl = document.createElement('div');
+      tipEl.className = 'rec-tip';
+      tipEl.innerHTML = `<strong>Tip:</strong> ${escHtml(tip)}`;
+      el.appendChild(tipEl);
+    }
+
+    // MoE filter toggle
+    const filterEl = document.createElement('div');
+    filterEl.className = 'rec-filter';
+    filterEl.innerHTML = `<label><input type="checkbox" id="rec-moe-filter" onchange="filterRecommendations()"> Show only MoE models</label>`;
+    el.appendChild(filterEl);
+
+    (data.recommendations || []).forEach(r => {
+      const card = document.createElement('div');
+      card.className = `rec-card${r.is_moe ? ' is-moe' : ' is-dense'}`;
+      const badges = [];
+      if (r.is_moe) badges.push('<span class="mc-badge moe">MoE</span>');
+      else badges.push('<span class="mc-badge dense">Dense</span>');
+      const fitBadgeHtml = r.fit ? fitBadge(r.fit) : '';
+      const qualityInfo = r.quality && r.quality.label ? `<span class="rec-quality">${r.quality.label}</span>` : '';
+      const tpsStr = r.estimated_tps ? `~${r.estimated_tps} tok/s` : '';
+      const moeNote = r.moe_advantage ? `<div class="rec-moe-note">${escHtml(r.moe_advantage)}</div>` : '';
+
+      card.innerHTML = `
+        <div class="rec-header">
+          <div class="rec-name">${escHtml(r.name)}</div>
+          <div class="rec-badges">${badges.join('')}${fitBadgeHtml}</div>
+        </div>
+        <div class="rec-desc">${escHtml(r.description)}</div>
+        ${moeNote}
+        <div class="rec-details">
+          <span><strong>${r.params_b}B</strong> total${r.is_moe ? ` / <strong>${r.active_params_b}B</strong> active` : ''}</span>
+          <span>Quant: <strong>${r.recommended_quant}</strong></span>
+          ${tpsStr ? `<span>${tpsStr}</span>` : ''}
+          ${qualityInfo}
+        </div>
+        <div class="rec-actions">
+          <button class="btn-sm accent" onclick="browseHFFiles('${escHtml(r.repo)}')">Browse Files</button>
+        </div>`;
+      el.appendChild(card);
+    });
+
+    if (!data.recommendations || data.recommendations.length === 0) {
+      el.innerHTML += '<div class="empty-state">No recommendations available for your hardware.</div>';
+    }
+  } catch (e) {
+    el.innerHTML = '<div class="empty-state">Could not load recommendations</div>';
+  }
+}
+
+function filterRecommendations() {
+  const moeOnly = $('#rec-moe-filter') && $('#rec-moe-filter').checked;
+  $$('.rec-card').forEach(card => {
+    if (moeOnly && card.classList.contains('is-dense')) {
+      card.style.display = 'none';
+    } else {
+      card.style.display = '';
+    }
+  });
 }
 
 $('#toggle-compat-table').addEventListener('click', () => {
@@ -402,9 +640,9 @@ async function refreshModelsPage() {
       const badges = [];
       if (m.is_loaded) badges.push('<span class="mc-badge loaded">Loaded</span>');
       if (m.is_default) badges.push('<span class="mc-badge default">Default</span>');
-      if (m.details.is_moe) badges.push('<span class="mc-badge moe">MoE</span>');
-      const paramInfo = m.details.is_moe
-        ? `${m.details.total_params} (${m.details.active_params} active)`
+      if (m.is_moe) badges.push('<span class="mc-badge moe">MoE</span>');
+      const paramInfo = m.is_moe && m.active_params_b
+        ? `${m.details.parameter_size} (${m.active_params_b}B active)`
         : m.details.parameter_size;
       card.innerHTML = `
         <div class="mc-header">
@@ -500,12 +738,13 @@ async function searchHF() {
       card.className = 'hf-card';
       card.onclick = () => browseHFFiles(r.id);
       const tags = (r.tags || []).map(t => `<span class="hf-tag">${escHtml(t)}</span>`).join('');
-      const paramsLine = r.params_b ? `<span class="hf-params-badge">${r.params_b}B params</span>` : '';
+      const paramsLine = r.params_b ? `<span class="hf-params-badge">${r.params_b}B${r.is_moe && r.active_params_b ? ` (${r.active_params_b}B active)` : ''}</span>` : '';
+      const moeBadge = r.is_moe ? '<span class="mc-badge moe">MoE</span>' : '';
       const sizeLine = r.estimated_size_gb ? `<span class="hf-size-est">~${r.estimated_size_gb} GB (Q4)</span>` : '';
       const compatLine = r.compatibility ? fitBadge(r.compatibility) : '';
       card.innerHTML = `
         <div class="hf-name">${escHtml(r.id)}</div>
-        ${(paramsLine || sizeLine || compatLine) ? `<div class="hf-compat-row">${paramsLine}${sizeLine}${compatLine}</div>` : ''}
+        ${(paramsLine || sizeLine || compatLine || moeBadge) ? `<div class="hf-compat-row">${moeBadge}${paramsLine}${sizeLine}${compatLine}</div>` : ''}
         <div class="hf-meta">
           <span>Downloads: ${fmtNum(r.downloads)}</span>
           <span>Likes: ${r.likes}</span>
@@ -732,12 +971,13 @@ async function smartSearchHF() {
         good: '<span class="rec-badge good">Good fit</span>',
         usable: '<span class="rec-badge usable">Usable (mixed)</span>',
         none: '<span class="rec-badge none">Too large</span>' }[r.recommendation] || '';
-      const paramsLine = r.params_b ? `<span class="hf-params-badge">${r.params_b}B</span>` : '';
+      const paramsLine = r.params_b ? `<span class="hf-params-badge">${r.params_b}B${r.is_moe && r.active_params_b ? ` (${r.active_params_b}B active)` : ''}</span>` : '';
+      const moeBadge = r.is_moe ? '<span class="mc-badge moe">MoE</span>' : '';
       const bestQ = r.best_quant ? `<span class="hf-quant-tag">${r.best_quant}</span>` : '';
       const fitInfo = r.best_fit ? `<span class="hf-size-est">~${r.best_fit.model_size_gb}GB</span>` : '';
       card.innerHTML = `
         <div class="hf-name">${escHtml(r.id)}</div>
-        <div class="hf-compat-row">${recBadge}${paramsLine}${bestQ}${fitInfo}</div>
+        <div class="hf-compat-row">${moeBadge}${recBadge}${paramsLine}${bestQ}${fitInfo}</div>
         <div class="hf-meta">
           <span>Downloads: ${fmtNum(r.downloads)}</span>
           <span>Likes: ${r.likes}</span>

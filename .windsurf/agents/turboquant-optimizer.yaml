@@ -1,52 +1,183 @@
-# TurboQuant Optimizer Agent
-# Automatically suggests performance optimizations for C++/CUDA/Assembly code
+# QuantumLeap Optimizer Agent
+# ExpertFlow Phase 3 + TurboQuant KV Cache Performance Optimization
 
-name: TurboQuant Optimizer
+name: QuantumLeap Optimizer
 description: |
-  Analyzes C++, CUDA, and Assembly code for performance optimization opportunities.
-  Suggests SIMD vectorization, memory access patterns, and kernel occupancy improvements.
+  Analyzes C++, CUDA, and Assembly code for ExpertFlow MoE and TurboQuant KV optimizations.
+  Focuses on expert caching, routing prediction, transfer compression, and SIMD vectorization.
+  Targets 130% speedup on MoE models through multiplicative synergy of optimizations.
 
 triggers:
   - file_patterns:
-      - "**/*.cpp"
-      - "**/*.cu"
-      - "**/*.S"
+      - "**/expertflow/**/*.cpp"
+      - "**/expertflow/**/*.cu"
+      - "**/expertflow/**/*.h"
+      - "**/turboquant/**/*.cpp"
+      - "**/turboquant/**/*.cu"
+      - "**/turboquant/**/*.S"
       - "**/*.cuh"
   - on_save: true
 
 rules:
-  - name: SIMD Vectorization
-    description: Detect loops that could benefit from AVX-512 intrinsics
+  - name: ExpertFlow MoE Optimization
+    description: Verify MoE-specific optimizations for expert caching and routing
     check: |
-      Look for scalar loops operating on float arrays.
-      Suggest _mm512_* intrinsics for arrays > 100 elements.
-      Ensure 64-byte alignment for AVX-512 loads/stores.
+      Expert Cache:
+      - LRU + frequency-weighted eviction (target 75-85% hit rate)
+      - VRAM budget: 2.5 GB for 6GB cards, scale with available memory
+      - Cache slots: ~3103 for 2.5GB cache (2.51 MB per expert)
+      
+      Routing Predictor:
+      - Markov chain with per-layer frequency EMA
+      - Cross-layer transition tracking (target 74-92% accuracy)
+      - Speculative prefetch of top-K next experts
+      
+      Transfer Compression:
+      - LZ77-style compression (target 89.7% savings)
+      - Pinned memory pool for staging (64 MB default)
+      - Async H2D transfers with CUDA streams
+      
+      Pipeline Overlap:
+      - Multi-stream execution (3 streams: compute, H2D, D2H)
+      - Hide PCIe latency behind attention compute
+      - Fused dequant+GEMV kernels for IQ2_XXS
 
-  - name: CUDA Occupancy
-    description: Check CUDA kernel launch configs for optimal occupancy
+  - name: TurboQuant KV Cache Compression
+    description: Verify KV cache compression pipeline correctness
     check: |
-      Verify block sizes are multiples of 32 (warp size).
-      Check shared memory usage doesn't limit occupancy.
-      Suggest __restrict__ on all pointer parameters.
+      Hadamard Preconditioning:
+      - Fast Walsh-Hadamard Transform (FWHT)
+      - AVX-512 vectorization for CPU path (_mm512_*)
+      - 64-byte alignment for SIMD loads/stores
+      
+      PolarQuant:
+      - Polar coordinate decomposition (radius + angles)
+      - Beta distribution quantization (no normalization constants)
+      - Multi-dimensional support (2D, 4D, 8D)
+      
+      QJL:
+      - 1-bit sign quantization on residual
+      - Unbiased inner product correction
+      - Fused kernel for GPU path
+      
+      Compression Ratios:
+      - TQ2: 2.5/16 = 0.156 (marginal loss, max compression)
+      - TQ3: 3.5/16 = 0.219 (zero loss, recommended)
+      - TQ4: 4.0/16 = 0.250 (8× speedup vs FP32)
 
-  - name: Memory Access Patterns
-    description: Detect non-coalesced memory access in CUDA kernels
+  - name: CUDA Kernel Optimization
+    description: Check CUDA kernels for optimal occupancy and memory patterns
     check: |
-      Ensure consecutive threads access consecutive memory addresses.
-      Use shared memory for tile-based algorithms.
-      Avoid bank conflicts in shared memory.
+      Occupancy:
+      - Block sizes multiples of 32 (warp size)
+      - Target >70% occupancy for compute-bound kernels
+      - Shared memory usage <48KB per block (Ampere/RDNA2)
+      
+      Memory Coalescing:
+      - Consecutive threads access consecutive addresses
+      - Use __restrict__ on all pointer parameters
+      - Align data to 128 bytes for optimal PCIe transfers
+      
+      Warp-level Primitives:
+      - Use __shfl_down_sync() for warp reductions
+      - Avoid __syncthreads() in divergent branches
+      - Prefer warp-level ops over shared memory atomics
+      
+      Fused Kernels:
+      - Combine dequant+GEMV for IQ2_XXS experts
+      - Fuse SiLU activation with multiplication
+      - Minimize kernel launches (target <10 per token)
 
-  - name: Assembly Quality
-    description: Verify assembly code quality and correctness
+  - name: SIMD Vectorization (CPU)
+    description: Verify AVX-512/AVX2 vectorization for CPU hot paths
     check: |
-      Ensure all registers are properly saved/restored.
-      Check alignment of data sections (.align 64 for AVX-512).
-      Verify loop unrolling is appropriate.
+      AVX-512 (Intel i5-11400H):
+      - Use _mm512_* intrinsics for float/int32 arrays
+      - 64-byte alignment for loads/stores
+      - Prefer FMA instructions (_mm512_fmadd_ps)
+      - Unroll loops by 16 (512-bit / 32-bit float)
+      
+      AVX2 Fallback:
+      - Use _mm256_* intrinsics when AVX-512 unavailable
+      - 32-byte alignment
+      - Unroll loops by 8
+      
+      Critical Paths:
+      - Hadamard Transform (FWHT)
+      - Polar decomposition
+      - Expert weight dequantization
+      - Attention QK^T matmul
+
+  - name: Memory Safety (RAII)
+    description: Ensure RAII for GPU memory and prevent leaks
+    check: |
+      GPU Memory:
+      - Use std::unique_ptr with custom deleters for CUDA/HIP
+      - RAII wrappers for cudaMalloc/hipMalloc
+      - Pinned memory pool with bump allocator
+      
+      CPU Memory:
+      - No raw pointers in public APIs
+      - Use std::span for array views
+      - Bounds checking in debug builds (#ifndef NDEBUG)
+      
+      Resource Cleanup:
+      - Destructors free all GPU resources
+      - CUDA streams destroyed in correct order
+      - No memory leaks in Valgrind/CUDA memcheck
+
+  - name: Performance Profiling
+    description: Verify performance meets Phase 3 targets
+    check: |
+      ExpertFlow Metrics:
+      - Cache hit rate: 75-85% (log every 100 tokens)
+      - Routing accuracy: 74-92% (log every 100 tokens)
+      - Transfer compression: 89.7% savings
+      - PCIe bandwidth: <60% utilization (hidden behind compute)
+      
+      Overall Performance:
+      - 6GB VRAM: 4.34 tok/s on 122B MoE (2.3× baseline)
+      - 24GB VRAM: 12-18 tok/s projected (6-9× baseline)
+      - 48GB VRAM: 68-85 tok/s projected (15-19× baseline)
+      
+      Profiling Tools:
+      - perf record -g for CPU hotspots
+      - rocprof/nvprof for GPU kernels
+      - Check occupancy >70% for compute kernels
 
 commands:
-  - name: Profile
-    command: "perf record -g ./build/benchmark && perf report"
+  - name: Build ExpertFlow
+    command: "ninja -C core/build_ef expertflow"
+  
+  - name: Test ExpertFlow
+    command: "ninja -C core/build_ef test_expertflow"
+  
+  - name: Profile CPU
+    command: "perf record -g -F 999 {binary} && perf report --stdio"
+  
+  - name: Profile AMD GPU
+    command: "rocprof --stats {binary}"
+  
+  - name: Profile NVIDIA GPU
+    command: "nsys profile --stats=true {binary}"
+  
   - name: Check Assembly
-    command: "objdump -d -M intel {file}"
-  - name: CUDA Profile
-    command: "nvprof --metrics all {binary}"
+    command: "objdump -d -M intel {file} | grep -A20 '<function>'"
+  
+  - name: Benchmark MoE
+    command: "EXPERTFLOW_MODEL=models/Qwen3.5-122B-A10B-UD-IQ2_XXS.gguf core/build_ef/test_expertflow"
+  
+  - name: Memory Check
+    command: "valgrind --leak-check=full --show-leak-kinds=all {binary}"
+
+best_practices:
+  - "Target 130% speedup through multiplicative synergy (not additive)"
+  - "Expert cache hit rate >75% is critical for performance"
+  - "Routing predictor accuracy >74% enables effective prefetching"
+  - "Transfer compression 89.7% reduces PCIe bottleneck"
+  - "Fused kernels minimize launch overhead (<10 per token)"
+  - "TQ3 KV compression (3.5 bits/ch) frees VRAM for expert cache"
+  - "Multi-stream pipeline hides PCIe latency behind compute"
+  - "RAII for all GPU resources prevents memory leaks"
+  - "Profile before optimizing (perf/rocprof/nsys)"
+  - "Test on real MoE models (Qwen 122B, DeepSeek, Mixtral)"

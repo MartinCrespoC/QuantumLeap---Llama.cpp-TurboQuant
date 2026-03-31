@@ -1,157 +1,178 @@
-# QuantumLeap Quick Start Guide
+# QuantumLeap — Quick Start
 
-Get QuantumLeap running in 5 minutes with automatic hardware detection and optimization.
-
-**Built on llama.cpp** with TurboQuant optimization engine for 801% faster inference.
+Get running in 5 minutes with **one command**.
 
 ## Prerequisites
 
-- **Linux/macOS/Windows** with Python 3.10+
-- **4GB+ RAM** (16GB+ recommended for large models)
-- **Optional**: NVIDIA GPU with 4GB+ VRAM (CPU-only works too)
+- **Linux**: Ubuntu 20.04+ / Debian 11+ / Arch / Fedora
+- **Dependencies**: cmake, ninja-build, git (auto-installed on most distros)
+- **RAM**: 8GB+ (16GB+ for large models)
+- **GPU** (optional): NVIDIA (CUDA) / AMD (ROCm)
 
-## Installation
-
-### 1. Clone and Setup
+## 1. Build (One Command)
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/quantumleap.git
-cd quantumleap
-bash setup.sh
+git clone https://github.com/MartinCrespoC/QuantumLeap.git
+cd QuantumLeap
+./build.sh
 ```
 
-The setup script automatically:
-- ✅ Detects your GPU, RAM, CPU, and SIMD support
-- ✅ Installs Python dependencies in virtual environment
-- ✅ Builds llama.cpp with AVX-512/CUDA optimizations
-- ✅ Creates necessary directories
-- ✅ Provides hardware-specific recommendations
+**What it does**:
+- ✅ Auto-detects GPU (NVIDIA CUDA / AMD ROCm / CPU-only)
+- ✅ Builds ExpertFlow core library (~1 min)
+- ✅ Builds llama.cpp with ExpertFlow Phase 3 (~2-4 min)
+- ✅ Verifies GPU backend integration
+- ✅ Shows next steps
 
-**Setup takes 5-10 minutes** (mostly compiling llama.cpp)
+**Build time**: 2-5 minutes total.
 
-### 2. Download a Model
-
-**For 4GB VRAM (RTX 3050 / GTX 1650):**
+**Missing dependencies?** The script will tell you what to install:
 ```bash
-# Best: MoE model - 15+ tok/s, 35B intelligence, 3B active
+# Ubuntu/Debian
+sudo apt install cmake ninja-build git
+
+# Arch
+sudo pacman -S cmake ninja git
+
+# Fedora
+sudo dnf install cmake ninja-build git
+```
+
+## 2. Download a Model
+
+**4GB VRAM** — MoE model (15+ tok/s):
+```bash
 curl -L -o models/Qwen3.5-35B-A3B-UD-IQ2_XXS.gguf \
   "https://huggingface.co/unsloth/Qwen3.5-35B-A3B-GGUF/resolve/main/Qwen3.5-35B-A3B-UD-IQ2_XXS.gguf"
 ```
 
-**For 8GB+ VRAM:**
+**8GB+ VRAM** — Dense model:
 ```bash
-# Dense model with better quality
 curl -L -o models/Qwen3.5-27B-Q4_K_M.gguf \
   "https://huggingface.co/Qwen/Qwen3.5-27B-GGUF/resolve/main/qwen3.5-27b-q4_k_m.gguf"
 ```
 
-**For CPU-Only:**
+**CPU-only** — Small fast model:
 ```bash
-# Small fast model
 curl -L -o models/Qwen3.5-4B-Q2_K.gguf \
   "https://huggingface.co/Qwen/Qwen3.5-4B-GGUF/resolve/main/qwen3.5-4b-q2_k.gguf"
 ```
 
-### 3. Start the Server
+Or use the Web UI **Models** tab to search HuggingFace and download directly.
+
+## 3. Run the Server
 
 ```bash
-bash scripts/start.sh
+./run.sh models/your-model.gguf
 ```
 
-**That's it!** Open http://localhost:11434 in your browser.
-
-## First Steps
-
-### Web UI (Recommended)
-
-1. Open http://localhost:11434
-2. Go to **Models** tab
-3. Your downloaded model should appear
-4. Click **Load** to start using it
-5. Go to **Chat** tab to start chatting
-
-### API Usage
-
-**Ollama-compatible:**
+**Examples**:
 ```bash
-curl http://localhost:11434/api/chat -d '{
-  "model": "Qwen3.5-35B-A3B-UD-IQ2_XXS",
-  "messages": [{"role": "user", "content": "Hello!"}]
-}'
+# Small model (fits on any GPU)
+./run.sh models/SmolLM2-1.7B-Instruct-Q4_K_M.gguf
+
+# Large MoE model (auto-optimized)
+./run.sh models/Qwen3.5-122B-A10B-UD-IQ2_XXS.gguf -ngl 2
+
+# Custom settings
+./run.sh models/model.gguf -ngl 10 -c 8192 --port 8082
 ```
 
-**OpenAI-compatible:**
+Server starts at **http://127.0.0.1:8080** (or your custom port).
+
+## 4. Use the API
+
+### OpenAI-compatible API
 ```bash
-curl http://localhost:11434/v1/chat/completions \
+curl http://127.0.0.1:8080/v1/completions \
   -H "Content-Type: application/json" \
   -d '{
-    "model": "Qwen3.5-35B-A3B-UD-IQ2_XXS",
-    "messages": [{"role": "user", "content": "Hello!"}]
+    "prompt": "Explain quantum computing:",
+    "max_tokens": 100,
+    "temperature": 0.7
   }'
 ```
 
-### Connect from IDE
+### Chat completion
+```bash
+curl http://127.0.0.1:8080/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "messages": [
+      {"role": "user", "content": "Hello!"}
+    ],
+    "max_tokens": 100
+  }'
+```
 
-**Windsurf / VSCode / Cursor:**
-- Set Ollama endpoint to: `http://localhost:11434`
-- Model will auto-load on first request
+### Check server status
+```bash
+curl http://127.0.0.1:8080/health
+# {"status":"ok"}
+```
+
+### Performance metrics
+The API returns timing information in every response:
+```json
+{
+  "timings": {
+    "prompt_per_second": 5.08,
+    "predicted_per_second": 4.14
+  }
+}
+```
+
+## Stopping the Server
+
+Press `Ctrl+C` in the terminal where `./run.sh` is running.
+
+Or find and kill the process:
+```bash
+pkill -f llama-server
+```
 
 ## Troubleshooting
 
-### "Model not found"
-- Check `models/` directory has `.gguf` files
-- Restart server: `bash scripts/start.sh`
+### Build Issues
 
-### "Out of memory" / Crash
-- Model too large for your hardware
-- Try smaller quantization (Q2_K instead of Q4_K_M)
-- Or use MoE model (3B active params vs 27B dense)
-
-### Slow performance
-- Check `memory.md` for optimization tips
-- Ensure AVX-512 is enabled (rebuild with `bash setup.sh`)
-- Try `--no-mmap` flag (auto-enabled for MoE)
-
-### CUDA not detected
-- Install CUDA Toolkit: https://developer.nvidia.com/cuda-downloads
-- Rebuild: `cd engine/llama.cpp/build && rm -rf * && cd ../../.. && bash setup.sh`
-
-### Python version issues
+**"cmake not found"**:
 ```bash
-# Use Python 3.10+ explicitly
-python3.10 -m venv venv
-source venv/bin/activate
-pip install -r api/requirements.txt
+# Ubuntu/Debian
+sudo apt install cmake ninja-build git
+
+# Arch
+sudo pacman -S cmake ninja git
 ```
 
-## Next Steps
+**"No GPU detected" but you have one**:
+```bash
+# NVIDIA: Install CUDA Toolkit
+# AMD: Install ROCm
+# Then re-run ./build.sh
+```
 
-- **Model Management**: See [README.md#model-management-guide](README.md#model-management-guide)
-- **Optimization Details**: Read `memory.md` for all benchmarks and findings
-- **Requantization**: Use Web UI to convert models to smaller sizes
-- **Smart Search**: Find HuggingFace models optimized for your hardware
+**Build fails with HIP errors (AMD)**:
+```bash
+# Check ROCm installation
+rocm-smi
+# If not found, install ROCm 5.7+
+```
 
-## Performance Expectations (RTX 3050 4GB + i5-11400H)
+### Runtime Issues
 
-### 4GB VRAM (RTX 3050)
-- MoE 35B-A3B IQ2_XXS: **15+ tok/s**
-- Dense 27B Q2_K: **4 tok/s**
-- 4B Q2_K: **45 tok/s**
+| Problem | Solution |
+|---------|----------|
+| Model not found | Check path: `ls -lh models/*.gguf` |
+| Out of memory | Lower `-ngl` value or use smaller model |
+| Port already in use | Use `--port 8081` or kill existing server |
+| Slow performance | Check GPU is being used: `nvidia-smi` or `rocm-smi` |
+| Server won't start | Check logs, verify binary exists: `ls -lh engine/llama.cpp/build/bin/llama-server` |
 
-### 8GB VRAM (RTX 3060)
-- Dense 27B Q4_K_M: **8-10 tok/s**
-- MoE 35B-A3B Q3_K_S: **20-25 tok/s**
+## Performance Reference
 
-### CPU-Only
-- MoE 35B-A3B IQ2_XXS: **9-12 tok/s**
-- 4B Q2_K: **15-20 tok/s**
-
-## Getting Help
-
-- **Issues**: Open a GitHub issue
-- **Discussions**: Use GitHub Discussions
-- **Documentation**: Check `memory.md` and `CONTRIBUTING.md`
-
----
-
-**Ready to optimize further?** Check out the [Model Management Guide](README.md#model-management-guide) for advanced tips!
+| VRAM | Model | Speed |
+|------|-------|-------|
+| 4GB | MoE 35B-A3B IQ2_XXS | 15+ tok/s |
+| 4GB | 4B Q2_K | 45 tok/s |
+| 8GB | Dense 27B Q4_K_M | 8-10 tok/s |
+| CPU | MoE 35B-A3B IQ2_XXS | 9-12 tok/s |

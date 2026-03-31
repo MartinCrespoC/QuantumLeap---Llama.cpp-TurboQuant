@@ -1,0 +1,14 @@
+/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef/CMakeFiles/turboquant.dir
+/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef/CMakeFiles/expertflow.dir
+/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef/CMakeFiles/test_accuracy.dir
+/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef/CMakeFiles/test_turboquant_kv.dir
+/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef/CMakeFiles/bench_polar.dir
+/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef/CMakeFiles/bench_matmul.dir
+/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef/CMakeFiles/test_expertflow.dir
+/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef/CMakeFiles/test.dir
+/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef/CMakeFiles/edit_cache.dir
+/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef/CMakeFiles/rebuild_cache.dir
+/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef/CMakeFiles/list_install_components.dir
+/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef/CMakeFiles/install.dir
+/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef/CMakeFiles/install/local.dir
+/home/ikharoz/Documents/Proyectos/QuantumLeap/core/build_ef/CMakeFiles/install/strip.dir

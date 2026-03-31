@@ -37,4 +37,4 @@ exec engine/llama.cpp/build/bin/llama-server \
   -c 8192 \
   -ngl 99 \
   --host 0.0.0.0 \
-  --port 11434
+  --port 11435

@@ -6,6 +6,12 @@
 #include <span>
 #include <vector>
 
+// TurboQuant KV Cache Pipeline (Google Research, arXiv:2504.19874)
+#include "turboquant/hadamard.h"
+#include "turboquant/polarquant.h"
+#include "turboquant/qjl.h"
+#include "turboquant/turboquant_kv.h"
+
 namespace turboquant {
 
 // Quantization bit widths
@@ -47,16 +53,8 @@ struct QuantResult {
 // PolarQuant Transform (Stage 1)
 // ============================================
 
-// CPU implementation (scalar fallback)
+// CPU implementation (scalar fallback) — defined in C++
 void polar_transform_scalar(
-    const float* __restrict__ x,
-    const float* __restrict__ y,
-    float* __restrict__ magnitude,
-    float* __restrict__ angle,
-    size_t n);
-
-// AVX-512 optimized implementation
-void polar_transform_avx512(
     const float* __restrict__ x,
     const float* __restrict__ y,
     float* __restrict__ magnitude,
@@ -164,6 +162,20 @@ void dequant_int4_avx512(
     float* __restrict__ output,
     size_t n);
 
+// AVX2 fast dequantize INT2 → FP32 (fallback)
+void dequant_int2_avx2(
+    const uint8_t* __restrict__ packed,
+    const float* __restrict__ scales,
+    float* __restrict__ output,
+    size_t n);
+
+// AVX2 fast dequantize INT4 → FP32 (fallback)
+void dequant_int4_avx2(
+    const uint8_t* __restrict__ packed,
+    const float* __restrict__ scales,
+    float* __restrict__ output,
+    size_t n);
+
 // ============================================
 // Lookup Tables
 // ============================================
@@ -179,9 +191,9 @@ void destroy_lookup_tables();
 bool has_avx512();
 bool has_avx2();
 
-// CUDA device info
-int get_cuda_device_count();
-size_t get_cuda_free_memory(int device = 0);
-int get_cuda_compute_capability(int device = 0);
+// GPU device info (CUDA or HIP)
+int get_gpu_device_count();
+size_t get_gpu_free_memory(int device = 0);
+int get_gpu_compute_capability(int device = 0);
 
 }  // namespace turboquant

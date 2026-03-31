@@ -1,5 +1,5 @@
 {
-  "default_model": "SmolLM2-1.7B-Instruct-Q4_K_M",
+  "default_model": "Qwen3.5-9B-Claude-4.6-HighIQ-INSTRUCT-HERETIC-UNCENSORED.Q4_K_M",
   "gpu_layers": 99,
   "ctx_size": 4096
 }

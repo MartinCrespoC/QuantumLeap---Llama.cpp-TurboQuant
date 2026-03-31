@@ -1,7 +1,70 @@
 #pragma once
 
-#include <cuda_runtime.h>
-#include <cublas_v2.h>
+// ============================================
+// HIP/CUDA Compatibility Layer
+// When compiled with HIP (AMD ROCm), we need explicit mappings
+// ============================================
+#if defined(TURBOQUANT_HIP) || defined(__HIP_PLATFORM_AMD__)
+  #include <hip/hip_runtime.h>
+  #if __has_include(<hipblas/hipblas.h>)
+    #include <hipblas/hipblas.h>
+  #endif
+  
+  // HIP compatibility macros
+  #define cudaError_t hipError_t
+  #define cudaSuccess hipSuccess
+  #define cudaGetErrorString hipGetErrorString
+  #define cudaMalloc hipMalloc
+  #define cudaFree hipFree
+  #define cudaMallocHost hipHostMalloc
+  #define cudaFreeHost hipHostFree
+  #define cudaMemcpy hipMemcpy
+  #define cudaMemcpyAsync hipMemcpyAsync
+  #define cudaMemcpyHostToDevice hipMemcpyHostToDevice
+  #define cudaMemcpyDeviceToHost hipMemcpyDeviceToHost
+  #define cudaMemcpyDeviceToDevice hipMemcpyDeviceToDevice
+  #define cudaMemset hipMemset
+  #define cudaMemsetAsync hipMemsetAsync
+  #define cudaGetDeviceCount hipGetDeviceCount
+  #define cudaSetDevice hipSetDevice
+  #define cudaGetDevice hipGetDevice
+  #define cudaGetDeviceProperties hipGetDeviceProperties
+  #define cudaMemGetInfo hipMemGetInfo
+  #define cudaDeviceSynchronize hipDeviceSynchronize
+  #define cudaStreamCreate hipStreamCreate
+  #define cudaStreamCreateWithFlags hipStreamCreateWithFlags
+  #define cudaStreamDestroy hipStreamDestroy
+  #define cudaStreamSynchronize hipStreamSynchronize
+  #define cudaStreamNonBlocking hipStreamNonBlocking
+  #define cudaEventCreate hipEventCreate
+  #define cudaEventCreateWithFlags hipEventCreateWithFlags
+  #define cudaEventDestroy hipEventDestroy
+  #define cudaEventRecord hipEventRecord
+  #define cudaEventSynchronize hipEventSynchronize
+  #define cudaEventQuery hipEventQuery
+  #define cudaEventDisableTiming hipEventDisableTiming
+  #define cudaStream_t hipStream_t
+  #define cudaEvent_t hipEvent_t
+  #define cudaDeviceProp hipDeviceProp_t
+  #define __half _Float16
+  #define cublasStatus_t hipblasStatus_t
+  #define CUBLAS_STATUS_SUCCESS HIPBLAS_STATUS_SUCCESS
+  #define cublasHandle_t hipblasHandle_t
+  #define cublasCreate hipblasCreate
+  #define cublasDestroy hipblasDestroy
+  #define cublasSetStream hipblasSetStream
+  #define cublasSgemm hipblasSgemm
+  #define cublasSgemv hipblasSgemv
+  #define CUBLAS_OP_N HIPBLAS_OP_N
+  #define CUBLAS_OP_T HIPBLAS_OP_T
+  
+  // HIP warp sync uses 64-bit masks (AMD wavefront = 64 threads)
+  #define __shfl_down_sync(mask, var, offset) __shfl_down(var, offset)
+#else
+  #include <cuda_runtime.h>
+  #include <cublas_v2.h>
+#endif
+
 #include <cstdio>
 #include <cstdlib>
 #include <memory>
@@ -10,14 +73,14 @@ namespace turboquant {
 namespace cuda {
 
 // ============================================
-// Error Checking
+// Error Checking (works for both CUDA and HIP)
 // ============================================
 
 #define CUDA_CHECK(call)                                                      \
   do {                                                                        \
     cudaError_t err = (call);                                                 \
     if (err != cudaSuccess) {                                                 \
-      fprintf(stderr, "CUDA error at %s:%d: %s\n", __FILE__, __LINE__,       \
+      fprintf(stderr, "GPU error at %s:%d: %s\n", __FILE__, __LINE__,        \
               cudaGetErrorString(err));                                        \
       abort();                                                                \
     }                                                                         \
@@ -27,7 +90,7 @@ namespace cuda {
   do {                                                                        \
     cublasStatus_t err = (call);                                              \
     if (err != CUBLAS_STATUS_SUCCESS) {                                       \
-      fprintf(stderr, "cuBLAS error at %s:%d: %d\n", __FILE__, __LINE__,     \
+      fprintf(stderr, "BLAS error at %s:%d: %d\n", __FILE__, __LINE__,       \
               static_cast<int>(err));                                          \
       abort();                                                                \
     }                                                                         \

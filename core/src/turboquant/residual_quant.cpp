@@ -82,14 +82,8 @@ QuantResult residual_quantize(
       float scale, zero;
       compute_group_params(residual.data() + start, len, bits, scale, zero);
 
-      if (iter == 0) {
-        scales[g] = scale;
-        zero_points[g] = zero;
-      } else {
-        // Accumulate refinements
-        scales[g] += scale;
-        zero_points[g] += zero;
-      }
+      scales[g] = scale;
+      zero_points[g] = zero;
 
       // Quantize this group
       for (size_t i = start; i < end; ++i) {
