@@ -46,6 +46,8 @@ Thumbs.db
 # Build artifacts
 engine/llama.cpp/build/
 engine/llama.cpp/models/
+core/build/
+core/build_ef/
 *.o
 *.a
 
