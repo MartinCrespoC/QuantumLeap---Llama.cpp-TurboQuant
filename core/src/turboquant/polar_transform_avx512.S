@@ -139,6 +139,8 @@ polar_transform_avx512:
     pop     rbx
     ret
 
+.size polar_transform_avx512, . - polar_transform_avx512
+
 # ============================================
 # Read-only constants (aligned to 64 bytes for ZMM loads)
 # ============================================
@@ -179,5 +181,3 @@ polar_transform_avx512:
     .rept 16
     .long 0x80000000            # sign bit mask
     .endr
-
-.size polar_transform_avx512, . - polar_transform_avx512
