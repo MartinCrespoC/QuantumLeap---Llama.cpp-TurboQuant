@@ -105,6 +105,8 @@ static void bench_residual_quant(size_t n, int iterations) {
 }
 
 int main(int argc, char* argv[]) {
+  (void)argc;  // Unused
+  (void)argv;  // Unused
   printf("=== TurboQuant Benchmark Suite ===\n");
   printf("CPU: %s\n", has_avx512() ? "AVX-512 DETECTED" : "No AVX-512");
   printf("\n");

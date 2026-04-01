@@ -182,3 +182,15 @@ else
     echo "CPU-only build - consider adding a GPU for better performance"
 fi
 echo ""
+
+
+I get the skepticism - there's a lot of hype in AI. But this is real code with real benchmarks:
+ 
+- 35/35 tests passing
+- Measured 4.34 tok/s on Qwen3.5-122B-A10B (vs 1.89 baseline)
+- Built on llama.cpp (not some wrapper)
+- MIT licensed, fully open source
+ 
+Check out the code if you're curious: https://github.com/MartinCrespoC/QuantumLeap/blob/main/core/EXPERTFLOW.md
+ 
+Maybe it's just another POC, but I found the results interesting enough to share. Happy to answer technical questions!
